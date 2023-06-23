@@ -10,9 +10,9 @@ contract MyGovernorTest is Test {
   MyGovernor public governor;
   GovToken public token;
 
-  address[] targets = new address[](1);
-  uint256[] values = new uint256[](1);
-  bytes[] calldatas = new bytes[](1);
+  address[] targets;
+  uint256[] values;
+  bytes[] calldatas;
   string description;
 
 
@@ -20,9 +20,9 @@ contract MyGovernorTest is Test {
     token = new GovToken();
     governor = new MyGovernor(token);
 
-    targets[0] = address(0x123);
-    values[0] = 0;
-    calldatas[0] = abi.encode("transfer", address(0x456), 1000);
+    targets = [address(0x123)];
+    values = [0];
+    calldatas = [abi.encode("transfer", address(0x456), 1000)];
     description = "Proposal #1: Give grant to team";
   }
 
