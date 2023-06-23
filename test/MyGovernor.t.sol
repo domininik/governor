@@ -56,4 +56,28 @@ contract MyGovernorTest is Test {
 
     assertEq(uint256(governor.state(proposalId)), uint256(IGovernor.ProposalState.Pending));
   }
+
+  function testCancel() public {
+    address[] memory targets = new address[](1);
+    targets[0] = address(0x123);
+
+    uint256[] memory values = new uint256[](1);
+    values[0] = 0;
+
+    bytes[] memory calldatas = new bytes[](1);
+    calldatas[0] = abi.encode("transfer", address(0x456), 1000);
+
+    string memory description = "Proposal #1: Give grant to team";
+
+    uint256 proposalId = governor.propose(
+      targets,
+      values,
+      calldatas,
+      description
+    );
+
+    governor.cancel(targets, values, calldatas, keccak256(bytes(description)));
+
+    assertEq(uint256(governor.state(proposalId)), uint256(IGovernor.ProposalState.Canceled));
+  }
 }
