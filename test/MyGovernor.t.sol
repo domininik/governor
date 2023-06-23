@@ -10,9 +10,20 @@ contract MyGovernorTest is Test {
   MyGovernor public governor;
   GovToken public token;
 
+  address[] targets = new address[](1);
+  uint256[] values = new uint256[](1);
+  bytes[] calldatas = new bytes[](1);
+  string description;
+
+
   function setUp() public {
     token = new GovToken();
     governor = new MyGovernor(token);
+
+    targets[0] = address(0x123);
+    values[0] = 0;
+    calldatas[0] = abi.encode("transfer", address(0x456), 1000);
+    description = "Proposal #1: Give grant to team";
   }
 
   function testName() public {
@@ -36,17 +47,6 @@ contract MyGovernorTest is Test {
   }
 
   function testPropose() public {
-    address[] memory targets = new address[](1);
-    targets[0] = address(0x123);
-
-    uint256[] memory values = new uint256[](1);
-    values[0] = 0;
-
-    bytes[] memory calldatas = new bytes[](1);
-    calldatas[0] = abi.encode("transfer", address(0x456), 1000);
-
-    string memory description = "Proposal #1: Give grant to team";
-
     uint256 proposalId = governor.propose(
       targets,
       values,
@@ -58,17 +58,6 @@ contract MyGovernorTest is Test {
   }
 
   function testCancel() public {
-    address[] memory targets = new address[](1);
-    targets[0] = address(0x123);
-
-    uint256[] memory values = new uint256[](1);
-    values[0] = 0;
-
-    bytes[] memory calldatas = new bytes[](1);
-    calldatas[0] = abi.encode("transfer", address(0x456), 1000);
-
-    string memory description = "Proposal #1: Give grant to team";
-
     uint256 proposalId = governor.propose(
       targets,
       values,
