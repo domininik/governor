@@ -4,9 +4,14 @@ pragma solidity ^0.8.9;
 import "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 import "openzeppelin-contracts/contracts/token/ERC20/extensions/ERC20Permit.sol";
 import "openzeppelin-contracts/contracts/token/ERC20/extensions/ERC20Votes.sol";
+import "openzeppelin-contracts/contracts/access/Ownable.sol";
 
-contract GovToken is ERC20, ERC20Permit, ERC20Votes {
+contract GovToken is ERC20, ERC20Permit, ERC20Votes, Ownable {
   constructor() ERC20("GovToken", "GTK") ERC20Permit("GovToken") {}
+
+  function mint(address to, uint256 amount) public onlyOwner {
+    _mint(to, amount);
+  }
 
   // The functions below are overrides required by Solidity.
 
