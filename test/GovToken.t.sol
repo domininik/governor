@@ -11,7 +11,7 @@ contract GovTokenTest is Test {
     token = new GovToken();
   }
 
-  function test_Namel() public {
+  function test_Name() public {
     assertEq(token.name(), "GovToken");
   }
 
@@ -37,10 +37,24 @@ contract GovTokenTest is Test {
   }
 
   function test_NotOwner_Mint() public {
-    address other = address(0x123);
-    vm.prank(other);
+    address notOwner = address(0x123);
+    vm.prank(notOwner);
     vm.expectRevert("Ownable: caller is not the owner");
-    token.mint(other, 1000);
-    assertEq(token.balanceOf(other), 0);
+    token.mint(notOwner, 1000);
+    assertEq(token.balanceOf(notOwner), 0);
+  }
+
+  function test_Transfer() public {
+    address owner = token.owner();
+    address notOwner = address(0x123);
+
+    // we use prank to keep the same msg.sender (who is owner) across the contracts
+    vm.startPrank(owner);
+    token.mint(owner, 1000);
+    token.transfer(notOwner, 100);
+    vm.stopPrank();
+
+    assertEq(token.balanceOf(owner), 900);
+    assertEq(token.balanceOf(notOwner), 100);
   }
 }
