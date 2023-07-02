@@ -8,7 +8,7 @@ import "../src/MyGovernor.sol";
 contract MyGovernorScript is Script {
   function setUp() public {}
 
-  function run() public returns (MyGovernor) {
+  function run() public returns (MyGovernor, GovToken) {
     vm.startBroadcast();
 
     GovToken token = new GovToken();
@@ -16,6 +16,6 @@ contract MyGovernorScript is Script {
 
     vm.stopBroadcast();
 
-    return governor;
+    return (governor, token);
   }
 }

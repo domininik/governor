@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "forge-std/Test.sol";
+import {Test, console} from "forge-std/Test.sol";
 import "../src/MyGovernor.sol";
 import "../src/GovToken.sol";
+import "../script/MyGovernor.s.sol";
 
 contract MyGovernorTest is Test {
   MyGovernor public governor;
@@ -15,8 +16,8 @@ contract MyGovernorTest is Test {
   string description;
 
   function setUp() public {
-    token = new GovToken();
-    governor = new MyGovernor(token);
+    MyGovernorScript script = new MyGovernorScript();
+    (governor, token) = script.run();
 
     targets = [address(token)];
     values = [0];
@@ -47,11 +48,13 @@ contract MyGovernorTest is Test {
   function test_GetVotes() public {
     address owner = token.owner();
 
+    vm.prank(owner);
     token.mint(owner, 1000);
     assertEq(token.balanceOf(owner), 1000);
     assertEq(token.numCheckpoints(owner), 0);
     assertEq(governor.getVotes(owner, 0), 0);
 
+    vm.prank(owner);
     token.delegate(owner);
     assertEq(token.numCheckpoints(owner), 1);
     assertEq(governor.getVotes(owner, 0), 0);
@@ -112,6 +115,7 @@ contract MyGovernorTest is Test {
   function test_CastVote() public {
     address owner = token.owner();
 
+    vm.startPrank(owner);
     token.mint(owner, 1000);
     token.delegate(owner);
 
@@ -127,9 +131,11 @@ contract MyGovernorTest is Test {
 
     governor.castVote(proposalId, uint8(GovernorCountingSimple.VoteType.For));
 
-    assertEq(governor.hasVoted(proposalId, address(this)), true);
+    assertEq(governor.hasVoted(proposalId, owner), true);
     
     (uint256 againstVotes, uint256 forVotes, uint256 abstainVotes) = governor.proposalVotes(proposalId);
+
+    vm.stopPrank();
 
     assertEq(againstVotes, 0);
     assertEq(forVotes, 1000);
